@@ -52,7 +52,7 @@ def inquirePublish(title):
     plt.ylabel('Date')
     plt.title(' Averge Publish')
     plt.legend()
-    plt.savefig(title + " Chart.png",dpi=400)
+    plt.savefig("chart/" + title + " Chart.png",dpi=400)
     plt.show()
 
 
