@@ -60,9 +60,9 @@ rssList = [
     "https://thetype.com/feed/typechat/"
 ]
 
-# for rss in rssList:
-#     catchFeed(rss)
+for rss in rssList:
+    catchFeed(rss)
 
-catchFeed(rssList[5])
+# catchFeed(rssList[5])
 
 

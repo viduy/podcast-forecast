@@ -17,36 +17,39 @@ app = Flask(__name__)  # 获取Flask对象，以当前模块名为参数
 def index():  # 方法名称
     return render_template('index.html')# 返回响应的内容
 
-@app.route('/search', methods = ['GET'])
-def search():
-    if not request.data:  # 檢測是否有數據
-        return jsonify({'code': 1})
+@app.route('/search/epList', methods = ['GET'])
+def epList():
+    if not request.args.get('title'):  # 檢測是否有數據
+        return jsonify({'code': 1, 'msg': 'no par'})
     
-    data = request.data.decode('utf-8')
-    data_json = json.loads(data)
-    title = data_json['title']
+    title = request.args.get('title')
+    print(title)
     connection = pymysql.connect(host='localhost', user='root',
                                  passwd='iX2yPaDJYjPAQn', db='podcast', port=3306, charset='utf8')
-    cursor = connection.cursor()
-    cursor.execute('select rssUrl from rss where feedTitle = %s', title)
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    cursor.execute('select rssUrl from rss where feedTitle REGEXP %s', title)
     rssUrl = cursor.fetchone()
     # dataMany = cursor.fetchmany(3)
+    if not rssUrl:
+        return jsonify({'code': 1, 'msg': 'no resutlt'})
     print(rssUrl)
-    cursor.execute('select * from episode where rssUrl = %s', rssUrl)
+    cursor.execute('select * from episode where rssUrl = %s', rssUrl['rssUrl'])
     data = cursor.fetchall()
-    # dateList = []
-    for item in data:
-        print(item[len(item)-1])
-        dt = parser.parse(str(item['date']))
-        # print(str(item[0]))
-        # print(dt)
-        
-        # cursor.execute('select ')
-    # dateList.sort(reverse=True)
+    # print(data)
+    for i in range(0, len(data)):
+        print(data[i]['date'])
+        data[i]['date'] = parser.parse(str(data[i]['date']))
+    # print(str(data))
+    print(data)
+    data = sorted(data, key=lambda k: k['date'], reverse=True)
     cursor.close()
     connection.close()
-    return jsonify({'code': 0, 'data': data})
+    return jsonify({'code': 0, 'msg': 'ok', 'data': data})
 
+
+@app.route('/search/like', methods=['GET'])
+def likeList():
+    print('nothing')
 
 if __name__ == '__main__':
     app.run()
