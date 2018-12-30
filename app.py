@@ -17,6 +17,10 @@ app = Flask(__name__)  # 获取Flask对象，以当前模块名为参数
 def index():  # 方法名称
     return render_template('index.html')# 返回响应的内容
 
+@app.route('/forecast')
+def forecast():
+    return render_template('forecast.html')
+
 @app.route('/search/epList', methods = ['GET'])
 def epList():
     if not request.args.get('title'):  # 檢測是否有數據
@@ -33,16 +37,18 @@ def epList():
     if not rssUrl:
         return jsonify({'code': 1, 'msg': 'no resutlt'})
     print(rssUrl)
+    cursor.execute('update rss set hot = hot + 1 where rssUrl = %s', rssUrl['rssUrl'])
     cursor.execute('select * from episode where rssUrl = %s', rssUrl['rssUrl'])
     data = cursor.fetchall()
     # print(data)
     for i in range(0, len(data)):
-        print(data[i]['date'])
+        # print(data[i]['date'])
         data[i]['date'] = parser.parse(str(data[i]['date']))
     # print(str(data))
-    print(data)
+    # print(data)
     data = sorted(data, key=lambda k: k['date'], reverse=True)
     cursor.close()
+    connection.commit()
     connection.close()
     return jsonify({'code': 0, 'msg': 'ok', 'data': data})
 
