@@ -57,5 +57,14 @@ def epList():
 def likeList():
     print('nothing')
 
+@app.route('/action/like')
+def like():
+    if not request.args.get('rss1'):  # 檢測是否有數據
+        return jsonify({'code': 1, 'msg': 'missing par'})
+    if not request.args.get('rss2'):
+        return jsonify({'code': 1, 'msg': 'missing par'})
+    rss1 = request.args.get('rss1')
+    rss2 = request.args.get('rss2')
+
 if __name__ == '__main__':
     app.run()
