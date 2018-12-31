@@ -130,6 +130,8 @@ def like():
     rss1 = request.args.get('rss1')
     rss2 = request.args.get('rss2')
     print(rss1, rss2)
+    if rss1 == rss2:
+        return jsonify({'code': 1, 'msg': 'same!'})
     connection = pymysql.connect(host='localhost', user='root',
                                  passwd='iX2yPaDJYjPAQn', db='podcast', port=3306, charset='utf8')
     cursor = connection.cursor(pymysql.cursors.DictCursor)
