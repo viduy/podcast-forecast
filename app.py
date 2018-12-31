@@ -65,6 +65,40 @@ def like():
         return jsonify({'code': 1, 'msg': 'missing par'})
     rss1 = request.args.get('rss1')
     rss2 = request.args.get('rss2')
+    connection = pymysql.connect(host='localhost', user='root',
+                                 passwd='iX2yPaDJYjPAQn', db='podcast', port=3306, charset='utf8')
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    cursor.execute('select * from con where rss1 = %s', rss1)
+    result = cursor.fetchone()
+    # dataMany = cursor.fetchmany(3)
+    if not result:
+        cursor.execute('select * from con where rss2 = %s', rss1)
+        result2 = cursor.fetchone()
+        print(result2)
+        if not result2:
+            # sql = "insert into con (rss1, rss2) values (%s, %s)"
+            # val = (rss1, rss2)
+            cursor.execute('insert into con (rss1, rss2) values (%s, %s)', (rss1, rss2))
+            # cursor.execute(sql, val)
+            cursor.close()
+            connection.commit()
+            connection.close()
+            return jsonify({'code': 0, 'msg': 'ok but no record'})
+        else:
+            if result2['rss1'] == rss2:
+                cursor.execute('update con set con = con + 1 where id = %s', result2['id'])
+                cursor.close()
+                connection.commit()
+                connection.close()
+                return jsonify({'code': 0, 'msg': 'ok'})
+    else:
+        if result['rss2'] == rss2:
+            cursor.execute('update con set con = con + 1 where id = %s', result['id'])
+            cursor.close()
+            connection.commit()
+            connection.close()
+            return jsonify({'code': 0, 'msg': 'ok'})
+    
 
 if __name__ == '__main__':
     app.run()
