@@ -55,7 +55,44 @@ def epList():
 
 @app.route('/search/like', methods=['GET'])
 def likeList():
-    print('nothing')
+    if not request.args.get('title'):  # 檢測是否有數據
+        return jsonify({'code': 1, 'msg': 'no par'})
+
+    title = request.args.get('title')
+    print(title)
+    connection = pymysql.connect(host='localhost', user='root',
+                                 passwd='iX2yPaDJYjPAQn', db='podcast', port=3306, charset='utf8')
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    cursor.execute('select rssUrl from rss where feedTitle REGEXP %s', title)
+    rssUrl = cursor.fetchone()
+    print(rssUrl)
+    cursor.execute('select rss2, con from con where rss1 = %s', rssUrl['rssUrl'])
+    result = cursor.fetchall()
+    data = []
+    if not result:
+        print('no result')
+        
+    else:
+        for item in result:
+            format = {'rss': '', 'con': 1}
+            format['rss'] = item['rss2']
+            format['con'] = item['con']
+            data.append(format)
+    cursor.execute('select rss1, con from con where rss2 = %s',
+                   rssUrl['rssUrl'])
+    result2 = cursor.fetchall()
+    print(result2)
+    if not result2:
+        print('no resutlt2')
+    else:
+        for item in result2:
+            format = {'rss': '', 'con': 1}
+            format['rss'] = item['rss1']
+            format['con'] = item['con']
+            data.append(format)
+    
+    data = sorted(data, key=lambda k: k['con'], reverse=True)
+    return jsonify({'code': 0, 'msg': 'ok', 'data': data})
 
 @app.route('/action/like')
 def like():
