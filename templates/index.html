@@ -99,7 +99,7 @@
                 </div>
             </div> -->
         </div>
-        <div class="col-md-4 column right-bg" >
+        <div id="rank" class="col-md-4 column right-bg" >
             <h2>You Like</h2>
             <div id='likeRank'>
                 
@@ -144,6 +144,8 @@
                         // $('.list').append('<li><p class="list-id">' + info[i].rank + '</p><p class="list-img"><img src="' + info[i].avatar + '" alt="" /></p><p class="list-name"><span class="list-user">' + info[i].nickname + '</span><span class="rank-age ' + sexCName + '"><em></em>' + info[i].age + '</span></p><p class="list-num">' + info[i].score + '</p></li>');
                         $('#epList').append('<div class="media" ><a class="pull-left" href="' + info[i].link + '"><img class="media-object" style="border-radius: 30px" src="' + info[i].image + '" alt="" width=80px/></a><div class="media-body "><h4 class="media-heading" style="margin: 15px">' + info[i].title + '</h4> ' + info[i].date + '</div></div>')
                     }
+                    console.log(res.rss)
+                    localStorage.setItem("rssUrl", res.rss)
                 },
                 error: function (err) { }
 
@@ -156,7 +158,7 @@
                     $('#likeRank').html("");
                     for (var i = 0; i < info.length; i++) {
                         url = 'http://127.0.0.1:5000/?title=' + info[i]['feedTitle']
-                        $('#likeRank').append('<a href=' + url + '><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
+                        $('#likeRank').append('<a class="con" rssUrl='+ info[i]['rssUrl']+' jumpTo=' + url + ' href="#"><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
                         console.log(info[i])
                         console.log(info[i].img)
                     }
@@ -171,7 +173,7 @@
                     $('#hotRank').html("");
                     for (var i = 0; i < info.length; i++) {
                         url = 'http://127.0.0.1:5000/?title=' + info[i]['feedTitle']
-                        $('#hotRank').append('<a href=' + url + '><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
+                        $('#hotRank').append('<a class="con" rssUrl='+ info[i]['rssUrl']+' jumpTo=' + url + ' href="#"><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
                         console.log(info[i])
                         console.log(info[i].img)
                     }
@@ -179,11 +181,9 @@
                 error: function (err) { }
             })
         }
+
     });
     
-    
-    
-
     $('#search').click(function () {
         console.log($('#searchTitle').val())
         $.ajax({
@@ -196,6 +196,7 @@
                     // $('.list').append('<li><p class="list-id">' + info[i].rank + '</p><p class="list-img"><img src="' + info[i].avatar + '" alt="" /></p><p class="list-name"><span class="list-user">' + info[i].nickname + '</span><span class="rank-age ' + sexCName + '"><em></em>' + info[i].age + '</span></p><p class="list-num">' + info[i].score + '</p></li>');
                     $('#epList').append('<div class="media" ><a class="pull-left" href="' + info[i].link + '"><img class="media-object" style="border-radius: 30px" src="' + info[i].image + '" alt="" width=80px/></a><div class="media-body "><h4 class="media-heading" style="margin: 15px">' + info[i].title + '</h4> ' + info[i].date + '</div></div>')
                 }
+                localStorage.setItem("rssUrl", res.rss)
             },
             error: function (err) { }
 
@@ -223,10 +224,25 @@
                 $('#hotRank').html("");
                 for (var i = 0; i < info.length; i++) {
                     url = 'http://127.0.0.1:5000/?title=' + info[i]['feedTitle']
-                    $('#hotRank').append('<a href=' + url + '><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
+                    $('#hotRank').append('<a class="con" rssUrl='+ info[i]['rssUrl']+' jumpTo=' + url + ' href="#"><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
                     console.log(info[i])
                     console.log(info[i].img)
                 }
+            },
+            error: function (err) { }
+        })
+    })
+    $("#rank").on('click', '.con', function () {
+        // console.log($(this).attr('rssUrl'))
+        console.log($(this).attr('jumpTo'))
+        // console.log(localStorage.getItem('rssUrl'))
+        url = '?rss1=' + localStorage.getItem('rssUrl') + '&rss2=' + $(this).attr('rssUrl')
+        $.ajax({
+            type: 'GET',
+            url: 'action/like' + url,
+            success: function (res) {
+                // location.href = $(this).attr('jumpTo')
+                alert('succuess')
             },
             error: function (err) { }
         })

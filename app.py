@@ -92,7 +92,7 @@ def likeList():
             data.append(format)
     dataSend = []
     for i in range(0, len(data)):
-        format = {'feedTitle': '', 'feedLink': '', 'img': '', 'con': 1}
+        format = {'feedTitle': '', 'feedLink': '', 'img': '', 'con': 1, 'rssUrl': ''}
         cursor.execute('select * from rss where rssUrl = %s', data[i]['rss'])
         result3 = cursor.fetchone()
         print('final')
@@ -102,7 +102,7 @@ def likeList():
             format['feedTitle'] = result3['feedTitle']
             format['feedLink'] = result3['feedLink']
             format['img'] = result3['img']
-            format
+            format['rssUrl'] = result3['rssUrl']
             format['con'] = data[i]['con']
             dataSend.append(format)
     dataSend = sorted(dataSend, key=lambda k: k['con'], reverse=True)
@@ -129,39 +129,78 @@ def like():
         return jsonify({'code': 1, 'msg': 'missing par'})
     rss1 = request.args.get('rss1')
     rss2 = request.args.get('rss2')
+    print(rss1, rss2)
     connection = pymysql.connect(host='localhost', user='root',
                                  passwd='iX2yPaDJYjPAQn', db='podcast', port=3306, charset='utf8')
     cursor = connection.cursor(pymysql.cursors.DictCursor)
-    cursor.execute('select * from con where rss1 = %s', rss1)
+    cursor.execute('select * from con where rss1 = "'+ rss1 +'" and rss2 = "' + rss2 + '"')
     result = cursor.fetchone()
-    # dataMany = cursor.fetchmany(3)
     if not result:
-        cursor.execute('select * from con where rss2 = %s', rss1)
+        cursor.execute('select * from con where rss1 = "'+ rss2+'" and rss2 = "' + rss1 + '"')
         result2 = cursor.fetchone()
-        print(result2)
         if not result2:
-            # sql = "insert into con (rss1, rss2) values (%s, %s)"
-            # val = (rss1, rss2)
             cursor.execute('insert into con (rss1, rss2) values (%s, %s)', (rss1, rss2))
-            # cursor.execute(sql, val)
             cursor.close()
             connection.commit()
             connection.close()
-            return jsonify({'code': 0, 'msg': 'ok but no record'})
+            return jsonify({'code': 0, 'msg': 'ok but'})
         else:
-            if result2['rss1'] == rss2:
-                cursor.execute('update con set con = con + 1 where id = %s', result2['id'])
-                cursor.close()
-                connection.commit()
-                connection.close()
-                return jsonify({'code': 0, 'msg': 'ok'})
-    else:
-        if result['rss2'] == rss2:
-            cursor.execute('update con set con = con + 1 where id = %s', result['id'])
+            cursor.execute('update con set con = con + 1 where id = %s', result2['id'])
             cursor.close()
             connection.commit()
             connection.close()
             return jsonify({'code': 0, 'msg': 'ok'})
+    else:
+        cursor.execute('update con set con = con + 1 where id = %s', result['id'])
+        cursor.close()
+        connection.commit()
+        connection.close()
+        return jsonify({'code': 0, 'msg': 'ok'})
+    # cursor.execute('select * from con where rss1 = %s', rss1)
+    # result = cursor.fetchone()
+    # # dataMany = cursor.fetchmany(3)
+    # if not result:
+    #     cursor.execute('select * from con where rss2 = %s', rss1)
+    #     result2 = cursor.fetchone()
+    #     print(result2)
+    #     if not result2:
+    #         # sql = "insert into con (rss1, rss2) values (%s, %s)"
+    #         # val = (rss1, rss2)
+    #         print('not 2')
+    #         cursor.execute('insert into con (rss1, rss2) values (%s, %s)', (rss1, rss2))
+    #         # cursor.execute(sql, val)
+    #         cursor.close()
+    #         connection.commit()
+    #         connection.close()
+    #         return jsonify({'code': 0, 'msg': 'ok but no record'})
+    #     else:
+    #         if result2['rss1'] == rss2:
+    #             cursor.execute('update con set con = con + 1 where id = %s', result2['id'])
+    #             cursor.close()
+    #             connection.commit()
+    #             connection.close()
+    #             return jsonify({'code': 0, 'msg': 'ok'})
+    #         else:
+    #             cursor.execute('insert into con (rss1, rss2) values (%s, %s)', (rss1, rss2))
+    #             # cursor.execute(sql, val)
+    #             cursor.close()
+    #             connection.commit()
+    #             connection.close()
+    #             return jsonify({'code': 0, 'msg': 'ok but no record'})
+    # else:
+    #     if result['rss2'] == rss2:
+    #         cursor.execute('update con set con = con + 1 where id = %s', result['id'])
+    #         cursor.close()
+    #         connection.commit()
+    #         connection.close()
+    #         return jsonify({'code': 0, 'msg': 'ok'})
+    #     else:
+    #         print(result['rss2'], rss2)
+    #         cursor.execute('insert into con (rss1, rss2) values (%s, %s)', (rss1, rss2))
+    #         cursor.close()
+    #         connection.commit()
+    #         connection.close()
+    #         return jsonify({'code': 0, 'msg': 'ok but no record'})
     
 
 if __name__ == '__main__':
