@@ -20,13 +20,14 @@ def catchFeed(url):
     # 链接
 
     print(feeds['feed']['link'])
-
-    rssData = [rss_url, feeds['feed']['title'], feeds['feed']['link']]
+    print(feeds['feed']['image']['href'])
+    rssData = [rss_url, feeds['feed']['title'], feeds['feed']['link'], feeds['feed']['image']['href']]
+    print(rssData)
     # 子标题
     # print(feeds.feed.subtitle)
     # 查看文章数量
     try:
-        cursor.execute('insert into rss values (%s,%s,%s)', rssData)
+        cursor.execute('insert into rss (rssUrl, feedTitle, feedLink, img) values (%s,%s,%s,%s)', rssData)
     except:
         print("Error: insert failed")
     else:
@@ -52,17 +53,18 @@ def catchFeed(url):
     connection.close()
         
 rssList = [
-    "http://rss.lizhi.fm/rss/1569925.xml",
-    "https://s.anw.red/rss.xml",
-    "https://talk.swift.gg/static/rss.xml",
-    "http://rss.lizhi.fm/rss/14275.xml",
-    "https://daringfireball.net/thetalkshow/rss",
-    "https://thetype.com/feed/typechat/"
+    # "http://rss.lizhi.fm/rss/1569925.xml",
+    # "https://s.anw.red/rss.xml",
+    # "https://talk.swift.gg/static/rss.xml",
+    # "http://rss.lizhi.fm/rss/14275.xml",
+    # "https://daringfireball.net/thetalkshow/rss",
+    # "https://thetype.com/feed/typechat/",
+    'https://shengdongjixi.fireside.fm/rss',
 ]
 
-for rss in rssList:
-    catchFeed(rss)
+# for rss in rssList:
+#     catchFeed(rss)
 
-# catchFeed(rssList[5])
+catchFeed(rssList[0])
 
 

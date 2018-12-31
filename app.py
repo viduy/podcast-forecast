@@ -50,7 +50,7 @@ def epList():
     cursor.close()
     connection.commit()
     connection.close()
-    return jsonify({'code': 0, 'msg': 'ok', 'data': data})
+    return jsonify({'code': 0, 'msg': 'ok', 'data': data, 'rss': rssUrl['rssUrl']})
 
 
 @app.route('/search/like', methods=['GET'])
@@ -90,9 +90,36 @@ def likeList():
             format['rss'] = item['rss1']
             format['con'] = item['con']
             data.append(format)
-    
-    data = sorted(data, key=lambda k: k['con'], reverse=True)
-    return jsonify({'code': 0, 'msg': 'ok', 'data': data})
+    dataSend = []
+    for i in range(0, len(data)):
+        format = {'feedTitle': '', 'feedLink': '', 'img': '', 'con': 1}
+        cursor.execute('select * from rss where rssUrl = %s', data[i]['rss'])
+        result3 = cursor.fetchone()
+        print('final')
+        if not result3:
+            print('no result3')
+        else:
+            format['feedTitle'] = result3['feedTitle']
+            format['feedLink'] = result3['feedLink']
+            format['img'] = result3['img']
+            format
+            format['con'] = data[i]['con']
+            dataSend.append(format)
+    dataSend = sorted(dataSend, key=lambda k: k['con'], reverse=True)
+    print(dataSend)
+    return jsonify({'code': 0, 'msg': 'ok', 'data': dataSend})
+
+
+@app.route('/search/hot', methods=['GET'])
+def hotList():
+    title = request.args.get('title')
+    print(title)
+    connection = pymysql.connect(host='localhost', user='root',
+                                 passwd='iX2yPaDJYjPAQn', db='podcast', port=3306, charset='utf8')
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    cursor.execute('select * from rss order by hot desc')
+    result = cursor.fetchall()
+    return jsonify({'code': 0, 'msg': 'ok', 'data': result})
 
 @app.route('/action/like')
 def like():

@@ -2,12 +2,246 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../static/jquery.js"></script>
+    <title>Title</title>
+    <style>
+        .left-bg{
+            /* background: rgba(128,128,128,0.18); */
+            border-radius: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            margin-right: 30px;
+            display: block;
+
+
+        }
+        .right-bg
+        {
+            background: rgba(128,128,128,0.23) ;
+            width: 240px;
+            padding: 20px 20px 30px 20px;
+            border-radius: 20px;
+            display: block;
+            float: right;
+        }
+        .img-title
+        {
+            text-align: center ;
+            background: #ffffff ;
+            height: 30px
+        }
+        .img{
+            border-radius: 20px;
+            width: 200px;
+            height: 133px;
+        }
+
+    </style>
+
+
+
+
 </head>
 <body>
-    <img src="../static/index.png" alt="" width="100%">
+<div class="container">
+    <div class="row clearfix ">
+        <div style="margin: 30px" class="col-md-12 column ">
+            <nav class="navbar " role="navigation">
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav  ">
+                        <div class="navbar-header  "style="margin-left :180px">
+                        <span class="icon-bar"></span>
+                            <span class="icon-bar"></span></button> <a class="navbar-brand" href="#">NEXT</a>
+                            <form class="navbar-form navbar-left " role="search">
+                            <div class="form-group">
+                                <input class="form-control"style="width: 450px" placeholder="Search..." type="text" id="searchTitle"/>
+                                <button class="btn btn-default" type="button" id="search">Search</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    </ul>
+
+                </div>
+
+            </nav>
+        </div>
+    </div>
+    <div class="row clearfix" >
+        <div class="col-md-8 column left-bg" id = "epList">
+            <!-- <div class="media" >
+                <a class="pull-left" href="#"><img class="media-object" style="border-radius: 30px" src="../static/image/image.jpg" alt='' /></a>
+                <div class="media-body ">
+                    <h4 class="media-heading" style="margin: 15px">
+                        Nested media heading
+                    </h4> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
+                </div>
+            </div>
+            <div class="media" >
+                <a class="pull-left" href="#"><img class="media-object" style="border-radius: 30px;margin-top: 10px" src="../static/image/image.jpg" alt='' /></a>
+                <div class="media-body ">
+                    <h4 class="media-heading" style="margin: 15px">
+                        Nested media heading
+                    </h4> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
+                </div>
+            </div>
+            <div class="media" >
+                <a class="pull-left" href="#"><img class="media-object" style="border-radius: 30px;margin-top: 10px" src="../static/image/image.jpg" alt='' /></a>
+                <div class="media-body ">
+                    <h4 class="media-heading" style="margin: 15px">
+                        Nested media heading
+                    </h4> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
+                </div>
+            </div> -->
+        </div>
+        <div class="col-md-4 column right-bg" >
+            <h2>You Like</h2>
+            <div id='likeRank'>
+                
+                <!-- <div class="img" style="background-image: url('../static/image/image.jpg');">
+                    <div style="padding-top: 110px">
+                        <div class="img-title">title</div>
+                    </div>
+                </div>
+                
+                <div class="img" style="background-image: url('../static/image/image.jpg');margin-top: 20px">
+                    <div style="padding-top: 110px">
+                        <div class="img-title">title</div>
+                    </div>
+                </div>
+                
+                <div class="img" style="background-image: url('../static/image/image.jpg');margin-top: 20px">
+                    <div style="padding-top: 110px">
+                        <div class="img-title">title</div>
+                    </div>
+                </div> -->
+            </div>
+            <h2>Hot</h2>
+            <div id='hotRank'>
+                
+            </div>
+            
+
+        </div>
+        </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        if (GetQueryString('title')) {
+            $.ajax({
+                type: 'GET',
+                url: 'search/epList?title=' + GetQueryString('title'),
+                success: function (res) {
+                    var info = res.data
+                    $('#epList').html("");
+                    for (var i = 0; i < info.length; i++) {
+                        // $('.list').append('<li><p class="list-id">' + info[i].rank + '</p><p class="list-img"><img src="' + info[i].avatar + '" alt="" /></p><p class="list-name"><span class="list-user">' + info[i].nickname + '</span><span class="rank-age ' + sexCName + '"><em></em>' + info[i].age + '</span></p><p class="list-num">' + info[i].score + '</p></li>');
+                        $('#epList').append('<div class="media" ><a class="pull-left" href="' + info[i].link + '"><img class="media-object" style="border-radius: 30px" src="' + info[i].image + '" alt="" width=80px/></a><div class="media-body "><h4 class="media-heading" style="margin: 15px">' + info[i].title + '</h4> ' + info[i].date + '</div></div>')
+                    }
+                },
+                error: function (err) { }
+
+            })
+            $.ajax({
+                type: 'GET',
+                url: 'search/like?title=' + GetQueryString('title'),
+                success: function (res) {
+                    var info = res.data
+                    $('#likeRank').html("");
+                    for (var i = 0; i < info.length; i++) {
+                        url = 'http://127.0.0.1:5000/?title=' + info[i]['feedTitle']
+                        $('#likeRank').append('<a href=' + url + '><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
+                        console.log(info[i])
+                        console.log(info[i].img)
+                    }
+                },
+                error: function (err) { }
+            })
+            $.ajax({
+                type: 'GET',
+                url: 'search/hot',
+                success: function (res) {
+                    var info = res.data
+                    $('#hotRank').html("");
+                    for (var i = 0; i < info.length; i++) {
+                        url = 'http://127.0.0.1:5000/?title=' + info[i]['feedTitle']
+                        $('#hotRank').append('<a href=' + url + '><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
+                        console.log(info[i])
+                        console.log(info[i].img)
+                    }
+                },
+                error: function (err) { }
+            })
+        }
+    });
     
+    
+    
+
+    $('#search').click(function () {
+        console.log($('#searchTitle').val())
+        $.ajax({
+            type: 'GET',
+            url: 'search/epList?title=' + $('#searchTitle').val(),
+            success: function (res) {
+                var info = res.data
+                $('#epList').html("");
+                for (var i = 0; i < info.length; i++) {
+                    // $('.list').append('<li><p class="list-id">' + info[i].rank + '</p><p class="list-img"><img src="' + info[i].avatar + '" alt="" /></p><p class="list-name"><span class="list-user">' + info[i].nickname + '</span><span class="rank-age ' + sexCName + '"><em></em>' + info[i].age + '</span></p><p class="list-num">' + info[i].score + '</p></li>');
+                    $('#epList').append('<div class="media" ><a class="pull-left" href="' + info[i].link + '"><img class="media-object" style="border-radius: 30px" src="' + info[i].image + '" alt="" width=80px/></a><div class="media-body "><h4 class="media-heading" style="margin: 15px">' + info[i].title + '</h4> ' + info[i].date + '</div></div>')
+                }
+            },
+            error: function (err) { }
+
+        })
+        $.ajax({
+            type: 'GET',
+            url: 'search/like?title=' + $('#searchTitle').val(),
+            success: function (res) {
+                var info = res.data
+                $('#likeRank').html("");
+                for (var i = 0; i < info.length; i++) {
+                    url = 'http://127.0.0.1:5000/?title=' + info[i]['feedTitle']
+                    $('#likeRank').append('<a href='+ url +'><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
+                    console.log(info[i])
+                    console.log(info[i].img)
+                }
+            },
+            error: function (err) { }
+        })
+        $.ajax({
+            type: 'GET',
+            url: 'search/hot',
+            success: function (res) {
+                var info = res.data
+                $('#hotRank').html("");
+                for (var i = 0; i < info.length; i++) {
+                    url = 'http://127.0.0.1:5000/?title=' + info[i]['feedTitle']
+                    $('#hotRank').append('<a href=' + url + '><div class="img" style="background-image: url(' + info[i].img + '); background-size: 100% 100%; margin-top: 20px; height:200px;overflow:hidden;"><div style="padding-top: 170px"><div class="img-title">' + info[i].feedTitle + '</div></div></div></a>')
+                    console.log(info[i])
+                    console.log(info[i].img)
+                }
+            },
+            error: function (err) { }
+        })
+    })
+
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+    
+
+
+</script>
+
 </body>
 </html>
