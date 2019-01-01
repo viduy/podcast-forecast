@@ -8,6 +8,8 @@ import pymysql
 from dateutil import parser
 from datetime import timedelta
 from datetime import datetime
+from datetime import timezone
+import pytz
 
 app = Flask(__name__)  # 获取Flask对象，以当前模块名为参数
 
@@ -16,11 +18,6 @@ app = Flask(__name__)  # 获取Flask对象，以当前模块名为参数
 @app.route('/',)  # 装饰器对该方法进行路由设置，请求的地址
 def index():  # 方法名称
     return render_template('index.html')# 返回响应的内容
-
-@app.route('/forecast')
-def forecast():
-    return render_template('forecast.html')
-
 
 @app.route('/search/reload', methods=['GET'])
 def reload():
@@ -292,7 +289,39 @@ def like():
     #         connection.commit()
     #         connection.close()
     #         return jsonify({'code': 0, 'msg': 'ok but no record'})
-    
 
+@app.route('/forecast', methods=['GET'])
+def forecast():
+    if not request.args.get('rss'):  # 檢測是否有數據
+        return jsonify({'code': 1, 'msg': 'missing par'})
+    rssUrl = {'rssUrl': request.args.get('rss')}
+    connection = pymysql.connect(host='localhost', user='root',
+                                 passwd='iX2yPaDJYjPAQn', db='podcast', port=3306, charset='utf8')
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    cursor.execute('select date from episode where rssUrl = %s', rssUrl['rssUrl'])
+    date = cursor.fetchall()
+    # print(date)
+    dateList = []
+    for item in date:
+        # print(item['date'])
+        dt = parser.parse(str(item['date']))
+        dateList.append(dt)
+    dateList.sort(reverse=True)
+    listRange = 10
+    averge = datetime(2011, 1, 7) - datetime(2011, 1, 7)
+    if listRange > len(dateList):
+        listRange = len(dateList)
+    for i in range(1, listRange):
+        averge += dateList[i-1] - dateList[i]
+    averge = averge / (listRange - 1)
+    sub = datetime.now(timezone.utc) - dateList[0]
+    result = (averge - sub).days
+    print(averge, sub, result)
+    if result < 0:
+        result = (datetime(2011, 1, 7) - datetime(2011, 1, 7)).days
+        msg = 'It will be released soon'
+    else:
+        msg = 'It will be released in ' + str(result) + ' days'
+    return jsonify({'code': 0, 'msg': msg})
 if __name__ == '__main__':
     app.run()
