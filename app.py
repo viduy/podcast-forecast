@@ -21,6 +21,39 @@ def index():  # 方法名称
 def forecast():
     return render_template('forecast.html')
 
+
+@app.route('/search/reload', methods=['GET'])
+def reload():
+    if not request.args.get('rss'):  # 檢測是否有數據
+        return jsonify({'code': 1, 'msg': 'no par'})
+
+    rssUrl = {'rssUrl': request.args.get('rss')}
+    print(rssUrl)
+    connection = pymysql.connect(host='localhost', user='root',
+                                 passwd='iX2yPaDJYjPAQn', db='podcast', port=3306, charset='utf8')
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    # cursor.execute('select rssUrl from rss where feedTitle REGEXP %s', title)
+    # rssUrl = cursor.fetchone()
+    # # dataMany = cursor.fetchmany(3)
+    # if not rssUrl:
+    #     return jsonify({'code': 1, 'msg': 'no resutlt'})
+    # print(rssUrl)
+    cursor.execute(
+        'update rss set hot = hot + 1 where rssUrl = %s', rssUrl['rssUrl'])
+    cursor.execute('select * from episode where rssUrl = %s', rssUrl['rssUrl'])
+    data = cursor.fetchall()
+    # print(data)
+    for i in range(0, len(data)):
+        # print(data[i]['date'])
+        data[i]['date'] = parser.parse(str(data[i]['date']))
+    # print(str(data))
+    # print(data)
+    data = sorted(data, key=lambda k: k['date'], reverse=True)
+    cursor.close()
+    connection.commit()
+    connection.close()
+    return jsonify({'code': 0, 'msg': 'ok', 'data': data, 'rss': rssUrl['rssUrl']})
+
 @app.route('/search/epList', methods = ['GET'])
 def epList():
     if not request.args.get('title'):  # 檢測是否有數據
@@ -51,6 +84,62 @@ def epList():
     connection.commit()
     connection.close()
     return jsonify({'code': 0, 'msg': 'ok', 'data': data, 'rss': rssUrl['rssUrl']})
+
+
+@app.route('/search/reload/like', methods=['GET'])
+def reLikeList():
+    if not request.args.get('rss'):  # 檢測是否有數據
+        return jsonify({'code': 1, 'msg': 'no par'})
+
+    rssUrl = {'rssUrl':request.args.get('rss')}
+    print(rssUrl)
+    connection = pymysql.connect(host='localhost', user='root',
+                                 passwd='iX2yPaDJYjPAQn', db='podcast', port=3306, charset='utf8')
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
+    cursor.execute('select rss2, con from con where rss1 = %s',
+                   rssUrl['rssUrl'])
+    result = cursor.fetchall()
+    data = []
+    if not result:
+        print('no result')
+
+    else:
+        for item in result:
+            format = {'rss': '', 'con': 1}
+            format['rss'] = item['rss2']
+            format['con'] = item['con']
+            data.append(format)
+    cursor.execute('select rss1, con from con where rss2 = %s',
+                   rssUrl['rssUrl'])
+    result2 = cursor.fetchall()
+    print(result2)
+    if not result2:
+        print('no resutlt2')
+    else:
+        for item in result2:
+            format = {'rss': '', 'con': 1}
+            format['rss'] = item['rss1']
+            format['con'] = item['con']
+            data.append(format)
+    dataSend = []
+    for i in range(0, len(data)):
+        format = {'feedTitle': '', 'feedLink': '',
+                  'img': '', 'con': 1, 'rssUrl': ''}
+        cursor.execute('select * from rss where rssUrl = %s', data[i]['rss'])
+        result3 = cursor.fetchone()
+        print('final')
+        if not result3:
+            print('no result3')
+        else:
+            format['feedTitle'] = result3['feedTitle']
+            format['feedLink'] = result3['feedLink']
+            format['img'] = result3['img']
+            format['rssUrl'] = result3['rssUrl']
+            format['con'] = data[i]['con']
+            dataSend.append(format)
+    dataSend = sorted(dataSend, key=lambda k: k['con'], reverse=True)
+    print(dataSend)
+    return jsonify({'code': 0, 'msg': 'ok', 'data': dataSend})
 
 
 @app.route('/search/like', methods=['GET'])
