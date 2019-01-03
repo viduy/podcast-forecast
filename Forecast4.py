@@ -59,10 +59,10 @@ def inquirePublish(title):
     # df.set_index('date', inplace=True)
     # print(df)
     # # print(df.index)
-    ts = df['sub']
-    ts_log = np.log(ts)
+    # ts = df['sub']
+    # ts_log = np.log(ts)
     # test_stationarity(ts)
-    print(test_stochastic(ts))
+    # print(test_stochastic(ts))
     
 
 # def test_stationarity(timeseries):

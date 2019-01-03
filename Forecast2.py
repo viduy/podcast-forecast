@@ -95,5 +95,5 @@ def inquirePublish(title):
     plt.show()
 
 
-inquirePublish('VoicerFM')
+inquirePublish('字谈字畅')
 
