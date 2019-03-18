@@ -27,7 +27,7 @@ def inquirePublish(title):
         # print(dt)
         dateList.append(dt)
         # cursor.execute('select ')
-    dateList.sort(reverse = True)
+    dateList.sort(reverse=True)
     print(dateList)
     isFirst = True
     for j in range(1, 100):
@@ -47,12 +47,13 @@ def inquirePublish(title):
         x.append(j * 10)
     cursor.close()
     connection.close()
-    plt.plot(x, y, label="chart", marker='o',color="red",linestyle='--', markerfacecolor='b')
+    plt.plot(x, y, label="chart", marker='o', color="red",
+             linestyle='--', markerfacecolor='b')
     plt.xlabel('Cricle')
     plt.ylabel('Date')
     plt.title(' Averge Publish')
     plt.legend()
-    plt.savefig("chart/" + title + " Chart.png",dpi=400)
+    plt.savefig("chart/" + title + " Chart.png", dpi=400)
     plt.show()
 
 
